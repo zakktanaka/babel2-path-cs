@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Babel
 {
+    using System.IO;
     using WPath = System.IO.Path;
 
     public class BabelDirectory
@@ -20,5 +21,33 @@ namespace Babel
         }
 
         public string Path { get; }
+
+        public IEnumerable<string> AllFiles
+        {
+            get
+            {
+                return Directory
+                    .EnumerateFiles(Path, "*", SearchOption.AllDirectories)
+                    .Select(file =>
+                    {
+                        var rel = uri.MakeRelativeUri(new Uri(file));
+                        return Uri.UnescapeDataString(rel.ToString());
+                    });
+            }
+        }
+
+        public IEnumerable<string> AllDirectories
+        {
+            get
+            {
+                return Directory
+                    .EnumerateDirectories(Path, "*", SearchOption.AllDirectories)
+                    .Select(file =>
+                    {
+                        var rel = uri.MakeRelativeUri(new Uri(file));
+                        return Uri.UnescapeDataString(rel.ToString());
+                    });
+            }
+        }
     }
 }
